@@ -9,10 +9,16 @@ var col = 0
 export var appear_speed = 3
 export var fall_speed = 1.0
 
-var dying = false
+var dying = 0
 
 var colors = [
-	Color(1,1,1,1)
+	Color8(224, 49, 49),
+	Color8(253, 126, 20),
+	Color8(255, 224, 102),
+	Color8(148, 216, 45),
+	Color8(34, 139, 230),
+	Color8(132, 94, 247),
+	Color8(190, 75, 219)
 ]
 onready var textures = [
 	load("res://Assets/smoke0.png")
@@ -27,7 +33,9 @@ func _ready():
 	update_color()
 
 func _process(_delta):
-	if dying:
+	if dying > 0:
+		dying += 1
+	if dying > 40:
 		queue_free()
 
 func start_brick():
@@ -38,7 +46,7 @@ func _on_HUD_changed():
 
 
 func die():
-	dying = true
+	dying = 1
 	var target_color = $Color.color
 	target_color.a = 0
 	$Color.color = target_color
@@ -47,7 +55,15 @@ func die():
 
 
 func update_color():
-	pass
+	if HUD.color_blocks:
+		if row >= 0 and row < colors.size():
+			$Color.color = colors[row]
+	else:
+		$Color.color = Color(1,1,1,1)
 
 func emit_particle(pos):
-	pass
+	if HUD.particle_blocks:
+		$Particles2D.texture = textures[randi() % textures.size()]
+		$Particles2D.emitting = true
+		$Particles2D.global_position = pos
+
